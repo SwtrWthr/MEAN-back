@@ -11,7 +11,7 @@ module.exports = {
 
   getBook: (req, res) => {
     Book.findById(req.params.id, (err, book) => {
-      if(err) throw new Error(err)
+      if(err) return err
       res.send(book)
     })
   },
@@ -24,7 +24,8 @@ module.exports = {
   },
 
   updateBook: (req, res) => {
-    Book.findByIdAndUpdate(req.params.id, (err, result) => {
+    console.log(req.body)
+    Book.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, result) => {
       if(err) return err
       res.send(result)
     })
