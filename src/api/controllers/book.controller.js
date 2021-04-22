@@ -10,11 +10,28 @@ module.exports = {
   },
 
   getBook: (req, res) => {
-    res.send(`Book ${req.params.id}`)
+    Book.findById(req.params.id, (err, book) => {
+      if(err) throw new Error(err)
+      res.send(book)
+    })
   },
   
   addBook: (req, res) => {
     Book.create(req.body, (err, result) => {
+      if(err) return err
+      res.send(result)
+    })
+  },
+
+  updateBook: (req, res) => {
+    Book.findByIdAndUpdate(req.params.id, (err, result) => {
+      if(err) return err
+      res.send(result)
+    })
+  },
+
+  deleteBook: (req, res) => {
+    Book.findByIdAndDelete(req.params.id, (err, result) => {
       if(err) return err
       res.send(result)
     })
