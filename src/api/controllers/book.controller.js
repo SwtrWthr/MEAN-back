@@ -4,7 +4,6 @@ module.exports = {
   getBooks: (req, res) => {
     Book.find((err, books) => {
       if(err) return err
-
       res.json(books)
     })
   },
