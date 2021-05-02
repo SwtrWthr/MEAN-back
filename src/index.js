@@ -1,32 +1,19 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const path = require('path');
-const database = require('./config/db')
+const cors = require("cors");
 const routes = require('./api/routes');
-const cors = require('cors');
+const { connect } = require('./connection/db')
 
 app = express();
-app.use(cors({origin: 'http://localhost:4200'}));
+app.use(cors({origin: '*'}));
 app.options('*', cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/api/', routes)
 
-mongoose.connect(database.url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-})
-mongoose.connection.on('error', (err) => {
-  console.log(`error ${err}`)
-})
-
-mongoose.connection.on('connected', () => {
-  console.log('БД подключен...')
-})
-
+//CONNECT MONGO
+connect()
 
 const port = process.env.PORT || 4040;
 app.listen(port, () => {

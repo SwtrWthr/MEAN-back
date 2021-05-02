@@ -25,7 +25,15 @@ const bookSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     default: 0,
-  }
-})
+  },
+  image: {
+    type: String,
+    default: null,
+  },
+  filename: {
+    type: String,
+    default: null,
+  },
+});
 
 module.exports = mongoose.model('Book', bookSchema)
