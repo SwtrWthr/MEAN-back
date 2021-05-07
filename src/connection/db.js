@@ -9,12 +9,11 @@ const url =
 let gfs;
 
 const connect = () => {
-  console.log()
   mongoose.connect(url, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false,
+    useUnifiedTopology: true
   })
 
   mongoose.connection.on("error", (err) => {
@@ -43,6 +42,9 @@ const storage = new GridFsStorage({
     } else {
       return null;
     }
+  },
+  options: {
+    useUnifiedTopology: true,
   },
 });
 const upload = multer({ storage });

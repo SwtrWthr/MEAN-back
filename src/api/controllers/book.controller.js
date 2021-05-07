@@ -38,7 +38,6 @@ module.exports = {
 
   updateBook: (req, res) => {
     let body;
-    console.log(req.body)
     if (req.file) {
       body = {
         ...req.body,
@@ -91,4 +90,22 @@ module.exports = {
       res.status(200).json({message: 'Удалено!'});
     });
   },
+
+  dashboardGetBookQuantities: (req, res) => {
+    Book.find((err, books) => {
+      if (err) return err;
+      
+      quantities = books.map(book => {
+        return book.quantity
+      })
+      names = books.map(book => {
+        return book.title
+      })
+      
+      res.json({
+        names: names,
+        quantities: quantities
+      });
+    });
+  }
 };

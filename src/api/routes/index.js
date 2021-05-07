@@ -4,14 +4,16 @@ const { upload } = require('../../connection/db')
 const express = require('express');
 const router = express.Router()
 
-//BOOK
+// BOOK
 router.get('/books', ctrlBook.getBooks)
 router.get('/book/:id', ctrlBook.getBook)
 router.post('/books', upload.single('image'), ctrlBook.addBook) 
 router.put("/book/:id", upload.single("image"), ctrlBook.updateBook);
 router.delete('/book/:id', ctrlBook.deleteBook)
+// DASHBOARD BOOKS
+router.get('/books/quantities', ctrlBook.dashboardGetBookQuantities)
 
-//IMAGE
+// IMAGE
 router.get('/image/:id', ctrlImage.imageShow)
 router.delete('/image/:id', ctrlImage.removeImage)
 
