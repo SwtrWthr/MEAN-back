@@ -10,6 +10,7 @@ router.get('/book/:id', ctrlBook.getBook)
 router.post('/books', upload.single('image'), ctrlBook.addBook) 
 router.put("/book/:id", upload.single("image"), ctrlBook.updateBook);
 router.delete('/book/:id', ctrlBook.deleteBook)
+
 // DASHBOARD BOOKS
 router.get('/books/quantities', ctrlBook.dashboardGetBookQuantities)
 

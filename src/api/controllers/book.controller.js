@@ -1,5 +1,6 @@
 const { getGFS } = require('../../connection/db');
 const Book = require('../models/book.model')
+const mongoose = require('mongoose')
 
 module.exports = {
   addBook: (req, res) => {
@@ -26,14 +27,24 @@ module.exports = {
     Book.find((err, books) => {
       if (err) return err;
       res.json(books);
-    });
+    }).lean();
   },
 
   getBook: (req, res) => {
-    Book.findById(req.params.id, (err, book) => {
-      if (err) return err;
-      res.json(book);
-    });
+    // Book.findById(req.params.id, (err, book) => {
+    //   if (err) return err;
+    //   res.json(book);
+    // }).lean();
+    Book.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(req.params.id)
+        }
+      }], (err, book) => {
+        if(err) return console.log(err)
+        res.json(book)
+      }
+    )
   },
 
   updateBook: (req, res) => {
