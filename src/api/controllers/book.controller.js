@@ -4,23 +4,23 @@ const mongoose = require('mongoose')
 
 module.exports = {
   addBook: (req, res) => {
-     let body;
-     if(req.file) {
-       body = {
-         ...req.body,
-         image: `http://${req.get('host')}/api/image/${req.file.filename}`,
-         filename: req.file.filename
-       }
-     } else {
-       body = {
-         ...req.body,
-         image: null
-       };
-     }
-     Book.create(body, (err, result) => {
-       if (err) return err;
-       res.json(result);
-     });
+    let body;
+    if (req.file) {
+      body = {
+        ...req.body,
+        image: `http://${req.get("host")}/api/image/${req.file.filename}`,
+        filename: req.file.filename,
+      };
+    } else {
+      body = {
+        ...req.body,
+        image: null,
+      };
+    }
+    Book.create(body, (err, result) => {
+      if (err) return err;
+      res.json(result);
+    });
   },
 
   getBooks: (req, res) => {
@@ -35,16 +35,19 @@ module.exports = {
     //   if (err) return err;
     //   res.json(book);
     // }).lean();
-    Book.aggregate([
-      {
-        $match: {
-          _id: mongoose.Types.ObjectId(req.params.id)
-        }
-      }], (err, book) => {
-        if(err) return console.log(err)
-        res.json(book)
+    Book.aggregate(
+      [
+        {
+          $match: {
+            _id: mongoose.Types.ObjectId(req.params.id),
+          },
+        },
+      ],
+      (err, book) => {
+        if (err) return console.log(err);
+        res.json(book);
       }
-    )
+    );
   },
 
   updateBook: (req, res) => {
@@ -55,7 +58,7 @@ module.exports = {
         image: `http://${req.get("host")}/api/image/${req.file.filename}`,
         filename: req.file.filename,
       };
-      if(req.body.filename) {
+      if (req.body.filename) {
         let gfs = getGFS();
         gfs.remove(
           { filename: req.body.filename, root: "book_images" },
@@ -86,9 +89,9 @@ module.exports = {
   deleteBook: (req, res) => {
     Book.findByIdAndDelete(req.params.id, (err, result) => {
       if (err) return err;
-      
+
       if (result.filename) {
-        let gfs = getGFS()
+        let gfs = getGFS();
         gfs.remove(
           { filename: result.filename, root: "book_images" },
           (err, gridStore) => {
@@ -98,25 +101,53 @@ module.exports = {
           }
         );
       }
-      res.status(200).json({message: 'Удалено!'});
+      res.status(200).json({ message: "Удалено!" });
     });
   },
 
   dashboardGetBookQuantities: (req, res) => {
     Book.find((err, books) => {
       if (err) return err;
-      
-      quantities = books.map(book => {
-        return book.quantity
-      })
-      names = books.map(book => {
-        return book.title
-      })
-      
+
+      quantities = books.map((book) => {
+        return book.quantity;
+      });
+      names = books.map((book) => {
+        return book.title;
+      });
+
       res.json({
         names: names,
-        quantities: quantities
+        quantities: quantities,
       });
     });
-  }
+  },
+
+  filterBooks: (req, res) => {
+    if(req.body.genres && req.body.genres.length > 0) {
+      let genres = req.body.genres.map((genre) => {
+        return mongoose.Types.ObjectId(genre);
+      });
+      Book.aggregate(
+        [
+          {
+            $match: {
+              genres: {
+                $in: genres,
+              },
+            },
+          },
+        ],
+        (err, books) => {
+          if (err) return console.log(err);
+          res.json(books);
+        }
+      );
+    } else {
+      Book.find((err, books) => {
+        if (err) return err;
+        res.json(books);
+      }).lean();
+    }
+  },
 };

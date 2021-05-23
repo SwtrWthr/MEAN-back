@@ -34,8 +34,11 @@ const bookSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  genres: {
+    type: [{ type: mongoose.Types.ObjectId, ref: "Genre" }],
+  },
 });
 
-bookSchema.index({title: 1, author: 1})
+bookSchema.index({price: 1, name: 1})
 
 module.exports = mongoose.model('Book', bookSchema)

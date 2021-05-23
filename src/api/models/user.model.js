@@ -1,38 +1,32 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  title: {
+  first_name: {
     type: String,
     required: true,
   },
-  author: {
+  last_name: {
     type: String,
     required: true,
   },
-  isbn: {
+  email: {
     type: String,
     required: true,
     unique: true,
   },
-  year: {
-    type: Number,
+  password: {
+    type: String,
     required: true,
   },
-  price: {
-    type: Number,
-    default: 0,
-  },
-  quantity: {
-    type: Number,
-    default: 0,
-  },
-  image: {
+  phone: {
     type: String,
-    default: null,
   },
-  filename: {
-    type: String,
-    default: null,
+  admin: {
+    type: Boolean,
+    default: false,
+  },
+  favourite_books: {
+    type: [{ type: mongoose.Types.ObjectId, ref: "Book" }],
   },
 });
 
