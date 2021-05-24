@@ -16,6 +16,6 @@ app.use('/api/', routes)
 connect()
 
 const port = process.env.PORT || 4040;
-app.listen(port, '192.168.1.8', () => {
+app.listen(port, '192.168.5.174', () => {
   console.log('Сервер запущен...')
 })

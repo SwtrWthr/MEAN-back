@@ -1,5 +1,6 @@
 const { getGFS } = require('../../connection/db');
 const Book = require('../models/book.model')
+const User = require('../models/user.model')
 const mongoose = require('mongoose')
 
 module.exports = {
@@ -27,7 +28,7 @@ module.exports = {
     Book.find((err, books) => {
       if (err) return err;
       res.json(books);
-    }).lean();
+    }).populate('genres').lean();
   },
 
   getBook: (req, res) => {
@@ -124,7 +125,7 @@ module.exports = {
   },
 
   filterBooks: (req, res) => {
-    if(req.body.genres && req.body.genres.length > 0) {
+    if (req.body.genres && req.body.genres.length > 0) {
       let genres = req.body.genres.map((genre) => {
         return mongoose.Types.ObjectId(genre);
       });
@@ -137,17 +138,56 @@ module.exports = {
               },
             },
           },
-        ],
-        (err, books) => {
-          if (err) return console.log(err);
-          res.json(books);
-        }
-      );
+        ]
+      ).exec(function (err, books) {
+        if (err) return err
+        Book.populate(books, { path: 'genres' }, function (err, pop_books) {
+          if (err) return err
+          res.json(pop_books)
+        });
+      });;
     } else {
       Book.find((err, books) => {
         if (err) return err;
         res.json(books);
-      }).lean();
+      }).populate('genres').lean();
     }
   },
+
+  addToFavourite: async (req, res) => {
+    // console.log(req.params)
+    const book = await Book.findById(req.params.id, (err, book) => {
+      if (err) return err
+      return book
+    }).lean();
+    // console.log('book', book)
+    const user = await User.findById(req.params.user_id, (err, user) => {
+      if(err) return err
+      return user
+    })
+
+    if (user.favourite_books.includes(mongoose.Types.ObjectId(req.params.id))) {
+      // User.findByIdAndUpdate(
+      //   req.params.user_id,
+      //   { $pull: { favourite_books: mongoose.Types.ObjectId(req.params.id)} },
+      //   { new: true },
+      //   function (err, success) {
+      //     if (err) return err
+      //     res.send(success)
+      //   });
+      user.favourite_books.pull(book)
+    } else {
+      user.favourite_books.push(book)
+      // User.findByIdAndUpdate(
+      //   req.params.user_id ,
+      //   { $push: { favourite_books: book } },
+      //   { new: true },
+      //   function (err, success) {
+      //     if (err) return err
+      //     res.send(success)
+      //   });
+    }
+    user.save()
+    res.send(user)
+  }
 };

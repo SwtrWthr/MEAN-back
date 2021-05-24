@@ -15,6 +15,7 @@ router.get("/auth/me", verifyUserToken, ctrlAuth.me);
 // BOOK
 router.get('/books', ctrlBook.getBooks)
 router.get('/book/:id', ctrlBook.getBook)
+router.get('/books/:id/favourite/:user_id', ctrlBook.addToFavourite)
 router.post('/books', verifyUserToken, isAdmin, upload.single('image'), ctrlBook.addBook) 
 router.put("/book/:id", verifyUserToken, isAdmin, upload.single("image"), ctrlBook.updateBook);
 router.delete("/book/:id", verifyUserToken, isAdmin, ctrlBook.deleteBook);
